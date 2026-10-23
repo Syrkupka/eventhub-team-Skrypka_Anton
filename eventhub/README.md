@@ -2,7 +2,36 @@
 
 Навчальний проєкт курсу веб-технології та веб-дизайн: портал продажу квитків на події (EventHub).
 
-Це **стартовий стан тижня 1**. В роботі не вистачає частини каркаса — який ви створите самостійно виконуючи дану лабораторну роботу № 1.
+Стан після **лабораторної роботи № 1**: монорепо (pnpm workspaces + Turborepo),
+контракт API в OpenAPI 3.1, згенеровані з нього типи, мок-сервер Prism і
+фронтенд, що отримує дані через типізований клієнт. Бекенду ще немає.
+
+---
+
+## Швидкий старт (чистий клон)
+
+```bash
+git clone <URL> eventhub && cd eventhub
+
+# 1. Node 24.20+ (див. «Передумови» нижче), pnpm 11
+node -v
+corepack enable
+
+# 2. Залежності
+pnpm install
+
+# 3. Змінні оточення фронтенду (без цього кроку список подій буде порожній!)
+cp apps/web/.env.example apps/web/.env.local
+
+# 4. Типи зі специфікації (src/generated/ не комітиться)
+pnpm contracts
+
+# 5. Два термінали, обидва з кореня:
+pnpm mock               # термінал 1 — мок-API на http://127.0.0.1:4010
+pnpm --filter web dev   # термінал 2 — сайт на   http://localhost:5173
+```
+
+Відкрийте <http://localhost:5173> — має з'явитися список із двох подій.
 
 ---
 
@@ -11,25 +40,24 @@
 ```
 eventhub/
 ├── apps/
-│   ├── web/               React 19 + TypeScript + Vite (порожня заготовка)
+│   ├── web/               React 19 + TypeScript + Vite
 │   └── api-gateway/       NestJS 11, єдиний ендпоїнт GET /health
 ├── packages/
-│   └── config/            спільні tsconfig і eslint
-└── docs/adr/              шаблон архітектурного рішення
+│   ├── config/            спільні tsconfig і eslint
+│   └── contracts/         openapi.yaml + згенеровані з нього типи
+├── docs/adr/              архітектурні рішення (ADR)
+├── pnpm-workspace.yaml
+├── turbo.json
+└── package.json
 ```
 
-### Також в стартовом наборі потрібно самостійно додати інші елементи для розробки проєкту
+Граф задач Turborepo:
 
-| Файл / папка                                                     | Крок лабораторної |
-| ---------------------------------------------------------------- | ----------------- |
-| `pnpm-workspace.yaml` (workspace, `allowBuilds`, `engineStrict`) | крок 1            |
-| кореневий `package.json`                                         | крок 1            |
-| `turbo.json`                                                     | крок 1            |
-| `packages/contracts/` (OpenAPI + згенеровані типи)               | кроки 2–3         |
-| `apps/web/.env.example` та `.env.local`                          | крок 5            |
-| `docs/adr/0001-*.md`                                             | крок 6            |
-
-Поки цих файлів немає, `pnpm install` у корені **не спрацює** — це очікувано.
+```
+contracts#build  (openapi.yaml → src/generated/schema.d.ts)
+   ├──► web#build, web#typecheck
+   └──► api-gateway#build   (з тижня 2)
+```
 
 ---
 
@@ -44,7 +72,7 @@ eventhub/
 Головне правило: граф залежностей спрямований від `apps/` до `packages/`
 і ніколи навпаки.
 
-**`packages/contracts`** (з'явиться на кроці 2) — вершина цього графа.
+**`packages/contracts`** — вершина цього графа.
 Від нього залежать усі, він не залежить ні від кого. Якщо колись захочеться
 додати туди залежність на інший пакет — це сигнал, що в контракт кладуть
 щось зайве.
@@ -94,7 +122,7 @@ node -v          # перевірте результат, а не відсутн
 
 ```bash
 corepack enable
-corepack prepare pnpm@latest --activate
+corepack prepare pnpm@11 --activate
 ```
 
 Windows: працюйте у WSL2 або Git Bash і одразу виконайте
@@ -102,16 +130,17 @@ Windows: працюйте у WSL2 або Git Bash і одразу виконай
 
 ---
 
-## Запуск (після виконання кроку 1 лабораторної)
+## Усі команди
 
 ```bash
 pnpm install
+cp apps/web/.env.example apps/web/.env.local   # один раз після клону
 
 # згенерувати типи зі специфікації
 # (обов'язково після кожної зміни openapi.yaml)
 pnpm contracts
 
-# мок-сервер із контракту   → http://localhost:4010
+# мок-сервер із контракту   → http://127.0.0.1:4010
 pnpm mock
 
 # фронтенд                  → http://localhost:5173
@@ -119,7 +148,25 @@ pnpm --filter web dev
 
 # бекенд                    → http://localhost:3000/health
 pnpm --filter api-gateway dev
+
+# збірка / перевірка типів усього монорепо (через Turborepo, з кешем)
+pnpm build
+pnpm typecheck
 ```
+
+Усі команди запускаються **з кореня** репозиторію. З підпапки — `pnpm -w <команда>`.
+
+### Перевірка мок-сервера
+
+```bash
+curl -i "http://127.0.0.1:4010/events"                                   # 200, дві події
+curl -G --data-urlencode "city=Вінниця" "http://127.0.0.1:4010/events"   # кирилиця — лише так
+curl -H "Prefer: example=empty" "http://127.0.0.1:4010/events"           # порожній каталог
+curl -i "http://127.0.0.1:4010/events?limit=999"                         # 400, problem+json
+```
+
+Prism не фільтрує дані — він віддає приклади з контракту, але валідує
+параметри (`limit=999` → 400).
 
 Фронтенд і бекенд запускаються **незалежно**. До тижня 2 `web` працює проти
 мок-сервера Prism, а не проти `api-gateway` — у цьому й полягає сенс
