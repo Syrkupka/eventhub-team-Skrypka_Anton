@@ -1,0 +1,10 @@
+{
+  // Пакет лише типів: tsc тут тільки перевіряє, нічого не збирає.
+  "extends": "../config/tsconfig.base.json",
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "noEmit": true
+  },
+  "include": ["src"]
+}

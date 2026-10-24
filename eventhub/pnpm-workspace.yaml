@@ -1,0 +1,12 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+
+# Невідповідна версія Node -> ERR_PNPM_UNSUPPORTED_ENGINE, а не попередження.
+engineStrict: true
+
+# Рішення по кожному пакету зі скриптом встановлення (postinstall).
+# Пакет, якого тут немає, = нерозглянутий -> pnpm install падає.
+allowBuilds:
+  esbuild: true # потрібен Vite для збірки фронтенду
+  "@scarf/scarf": false # телеметрія, збирати нічого
