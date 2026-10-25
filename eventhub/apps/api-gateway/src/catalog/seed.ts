@@ -1,0 +1,71 @@
+import type { Event } from "@eventhub/contracts";
+
+// Тестові дані каталогу. У роботі №3 їх замінить база даних.
+// Дві події навмисно мають однаковий startsAt (2026-10-19T20:00:00Z),
+// щоб перевірити, що курсор нічого не губить і не дублює.
+export const EVENTS: Event[] = [
+  {
+    id: "018f2c1e-4a7b-7c3d-9e1f-2a5b6c7d8e9f",
+    title: "Симфонічний вечір",
+    description: "Програма з творів Лисенка та Дворжака",
+    category: "concert",
+    startsAt: "2026-10-12T19:00:00Z",
+    venue: { id: "018f2c1e-0000-7c3d-9e1f-2a5b6c7d8e00", name: "Філармонія", city: "Вінниця" },
+    minPrice: { amount: 25000, currency: "UAH" },
+    availableSeats: 143,
+  },
+  {
+    id: "018f2c1e-4a7b-7c3d-9e1f-2a5b6c7d8ea0",
+    title: "Джазовий квартет",
+    category: "concert",
+    startsAt: "2026-10-19T20:00:00Z",
+    venue: { id: "018f2c1e-0000-7c3d-9e1f-2a5b6c7d8e01", name: "Клуб «Підвал»", city: "Вінниця" },
+    minPrice: { amount: 18000, currency: "UAH" },
+    availableSeats: 12,
+  },
+  {
+    id: "018f2c1e-4a7b-7c3d-9e1f-2a5b6c7d8ea1",
+    title: "Стендап «Без цензури»",
+    category: "standup",
+    startsAt: "2026-10-19T20:00:00Z",
+    venue: { id: "018f2c1e-0000-7c3d-9e1f-2a5b6c7d8e02", name: "!FESTrepublic", city: "Львів" },
+    minPrice: { amount: 35000, currency: "UAH" },
+    availableSeats: 80,
+  },
+  {
+    id: "018f2c1e-4a7b-7c3d-9e1f-2a5b6c7d8ea2",
+    title: "Кайдашева сім'я",
+    category: "theatre",
+    startsAt: "2026-11-02T18:00:00Z",
+    venue: { id: "018f2c1e-0000-7c3d-9e1f-2a5b6c7d8e03", name: "Театр ім. Заньковецької", city: "Львів" },
+    minPrice: { amount: 20000, currency: "UAH" },
+    availableSeats: 210,
+  },
+  {
+    id: "018f2c1e-4a7b-7c3d-9e1f-2a5b6c7d8ea3",
+    title: "Динамо – Шахтар",
+    category: "sport",
+    startsAt: "2026-11-08T16:00:00Z",
+    venue: { id: "018f2c1e-0000-7c3d-9e1f-2a5b6c7d8e04", name: "НСК «Олімпійський»", city: "Київ" },
+    minPrice: { amount: 30000, currency: "UAH" },
+    availableSeats: 5400,
+  },
+  {
+    id: "018f2c1e-4a7b-7c3d-9e1f-2a5b6c7d8ea4",
+    title: "Фестиваль вуличної їжі",
+    category: "festival",
+    startsAt: "2026-11-14T10:00:00Z",
+    venue: { id: "018f2c1e-0000-7c3d-9e1f-2a5b6c7d8e05", name: "ВДНГ", city: "Київ" },
+    minPrice: { amount: 10000, currency: "UAH" },
+    availableSeats: 1000,
+  },
+  {
+    id: "018f2c1e-4a7b-7c3d-9e1f-2a5b6c7d8ea5",
+    title: "Органна музика при свічках",
+    category: "concert",
+    startsAt: "2026-11-21T19:00:00Z",
+    venue: { id: "018f2c1e-0000-7c3d-9e1f-2a5b6c7d8e06", name: "Будинок органної музики", city: "Львів" },
+    minPrice: { amount: 40000, currency: "UAH" },
+    availableSeats: 0,
+  },
+];
