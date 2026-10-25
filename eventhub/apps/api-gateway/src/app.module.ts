@@ -1,4 +1,5 @@
 import { Module } from "@nestjs/common";
+import { CatalogModule } from "./catalog/catalog.module";
 import { HealthModule } from "./health/health.module";
 
 /**
@@ -8,6 +9,6 @@ import { HealthModule } from "./health/health.module";
  * (валідація конфігурації, логер, фільтр помилок).
  */
 @Module({
-  imports: [HealthModule],
+  imports: [HealthModule, CatalogModule],
 })
 export class AppModule {}
